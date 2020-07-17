@@ -95,9 +95,6 @@ class Zip
                     if ($foundFileCount > 1) {
                         throw new MultipleComposerJsonException('Multiple composer.json files were found.');
                     }
-
-                    // archive can only contain one top level directory
-                    return false;
                 }
                 continue;
             }
@@ -105,11 +102,6 @@ class Zip
             // handle archives which do not have a TOC record for the directory itself
             if (false === strpos('\\', $dirname) && false === strpos('/', $dirname)) {
                 $topLevelPaths[$dirname.'/'] = true;
-                if (\count($topLevelPaths) > 1) {
-                    // archive can only contain one top level directory
-                    return false;
-                }
-
                 if ($foundFileCount > 1) {
                     throw new MultipleComposerJsonException('Multiple composer.json files were found.');
                 }

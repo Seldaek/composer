@@ -103,6 +103,9 @@ class ZipTest extends TestCase
         $this->assertEquals("{\n    \"name\": \"foo/bar\"\n}\n", $result);
     }
 
+    /**
+     * @expectedException \Composer\Exception\MultipleComposerJsonException
+     */
     public function testMultipleTopLevelDirsIsInvalid()
     {
         if (!extension_loaded('zip')) {
@@ -110,9 +113,7 @@ class ZipTest extends TestCase
             return;
         }
 
-        $result = Zip::getComposerJson(__DIR__.'/Fixtures/Zip/multiple.zip');
-
-        $this->assertNull($result);
+        Zip::getComposerJson(__DIR__.'/Fixtures/Zip/multiple.zip');
     }
 
     public function testReturnsComposerJsonFromFirstSubfolder()
@@ -125,5 +126,13 @@ class ZipTest extends TestCase
         $result = Zip::getComposerJson(__DIR__.'/Fixtures/Zip/single-sub.zip');
 
         $this->assertEquals("{\n    \"name\": \"foo/bar\"\n}\n", $result);
+    }
+
+    /**
+     * @expectedException \Composer\Exception\MultipleComposerJsonException
+     */
+    public function testThrowExceptionForMultipleComposerJsonInSubfolders()
+    {
+        Zip::getComposerJson(__DIR__.'/Fixtures/Zip/multiple_subfolders.zip');
     }
 }
