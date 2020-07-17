@@ -12,6 +12,8 @@
 
 namespace Composer\Util;
 
+use Composer\Exception\MultipleComposerJsonException;
+
 /**
  * @author Andreas Schempp <andreas.schempp@terminal42.ch>
  */
@@ -76,15 +78,24 @@ class Zip
             return $index;
         }
 
+        $foundFileCount = 0;
         $topLevelPaths = array();
         for ($i = 0; $i < $zip->numFiles; $i++) {
             $name = $zip->getNameIndex($i);
             $dirname = dirname($name);
+            $stat = $zip->statIndex($i);
+            if (basename($stat['name']) === $filename) {
+                $foundFileCount++;
+            }
 
             // handle archives with proper TOC
             if ($dirname === '.') {
                 $topLevelPaths[$name] = true;
                 if (\count($topLevelPaths) > 1) {
+                    if ($foundFileCount > 1) {
+                        throw new MultipleComposerJsonException('Multiple composer.json files were found.');
+                    }
+
                     // archive can only contain one top level directory
                     return false;
                 }
@@ -98,11 +109,19 @@ class Zip
                     // archive can only contain one top level directory
                     return false;
                 }
+
+                if ($foundFileCount > 1) {
+                    throw new MultipleComposerJsonException('Multiple composer.json files were found.');
+                }
             }
         }
 
         if ($topLevelPaths && false !== ($index = $zip->locateName(key($topLevelPaths).$filename)) && $zip->getFromIndex($index) !== false) {
             return $index;
+        }
+
+        if ($index && $foundFileCount > 1) {
+            throw new MultipleComposerJsonException('Multiple composer.json files were found.');
         }
 
         // no composer.json found either at the top level or within the topmost directory
