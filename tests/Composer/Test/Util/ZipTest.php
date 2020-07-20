@@ -133,6 +133,11 @@ class ZipTest extends TestCase
      */
     public function testThrowExceptionForMultipleComposerJsonInSubfolders()
     {
+        if (!extension_loaded('zip')) {
+            $this->markTestSkipped('The PHP zip extension is not loaded.');
+            return;
+        }
+
         Zip::getComposerJson(__DIR__.'/Fixtures/Zip/multiple_subfolders.zip');
     }
 }
