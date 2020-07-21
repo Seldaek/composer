@@ -12,8 +12,6 @@
 
 namespace Composer\Util;
 
-use Composer\Exception\MultipleComposerJsonException;
-
 /**
  * @author Andreas Schempp <andreas.schempp@terminal42.ch>
  */
@@ -68,8 +66,9 @@ class Zip
      *
      * @param \ZipArchive $zip
      * @param string      $filename
+     * @throws \RuntimeException
      *
-     * @return bool|int
+     * @return int
      */
     private static function locateFile(\ZipArchive $zip, $filename)
     {
@@ -78,33 +77,21 @@ class Zip
             return $index;
         }
 
-        $foundFileCount = 0;
         $topLevelPaths = array();
         for ($i = 0; $i < $zip->numFiles; $i++) {
             $name = $zip->getNameIndex($i);
             $dirname = dirname($name);
-            $stat = $zip->statIndex($i);
-            if (basename($stat['name']) === $filename) {
-                $foundFileCount++;
-            }
 
             // handle archives with proper TOC
             if ($dirname === '.') {
                 $topLevelPaths[$name] = true;
-                if (\count($topLevelPaths) > 1) {
-                    if ($foundFileCount > 1) {
-                        throw new MultipleComposerJsonException('Multiple composer.json files were found.');
-                    }
-                }
-                continue;
+                throw new \RuntimeException('Archive has more than one top level directories, and no composer.json was found on the top level, so it\'s an invalid archive. Top level path found were: '.implode(',', array_keys($topLevelPaths)));
             }
 
             // handle archives which do not have a TOC record for the directory itself
             if (false === strpos('\\', $dirname) && false === strpos('/', $dirname)) {
                 $topLevelPaths[$dirname.'/'] = true;
-                if ($foundFileCount > 1) {
-                    throw new MultipleComposerJsonException('Multiple composer.json files were found.');
-                }
+                throw new \RuntimeException('Archive has more than one top level directories, and no composer.json was found on the top level, so it\'s an invalid archive. Top level path found were: '.implode(',', array_keys($topLevelPaths)));
             }
         }
 
@@ -112,11 +99,6 @@ class Zip
             return $index;
         }
 
-        if ($index && $foundFileCount > 1) {
-            throw new MultipleComposerJsonException('Multiple composer.json files were found.');
-        }
-
-        // no composer.json found either at the top level or within the topmost directory
-        return false;
+        throw new \RuntimeException('No composer.json found either at the top level or within the topmost directory');
     }
 }
