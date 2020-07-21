@@ -92,7 +92,7 @@ class ArtifactRepository extends ArrayRepository implements ConfigurableReposito
         try {
             $json = Zip::getComposerJson($file->getPathname());
         } catch (\Exception $exception) {
-            $this->io->write($exception->getMessage(), false, IOInterface::VERBOSE);
+            $this->io->write('Failed loading package '.$file->getPathname().': '.$exception->getMessage(), false, IOInterface::VERBOSE);
         }
 
         if (null === $json) {
