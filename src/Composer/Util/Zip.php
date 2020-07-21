@@ -86,7 +86,7 @@ class Zip
             if ($dirname === '.') {
                 $topLevelPaths[$name] = true;
                 if (\count($topLevelPaths) > 1) {
-                    throw new \RuntimeException('Archive has more than one top level directories, and no composer.json was found on the top level, so it\'s an invalid archive. Top level path found were: '.implode(',', array_keys($topLevelPaths)));
+                    throw new \RuntimeException('Archive has more than one top level directories, and no composer.json was found on the top level, so it\'s an invalid archive. Top level paths found were: '.implode(',', array_keys($topLevelPaths)));
                 }
                 continue;
             }
@@ -95,7 +95,7 @@ class Zip
             if (false === strpos('\\', $dirname) && false === strpos('/', $dirname)) {
                 $topLevelPaths[$dirname.'/'] = true;
                 if (\count($topLevelPaths) > 1) {
-                    throw new \RuntimeException('Archive has more than one top level directories, and no composer.json was found on the top level, so it\'s an invalid archive. Top level path found were: '.implode(',', array_keys($topLevelPaths)));
+                    throw new \RuntimeException('Archive has more than one top level directories, and no composer.json was found on the top level, so it\'s an invalid archive. Top level paths found were: '.implode(',', array_keys($topLevelPaths)));
                 }
             }
         }
