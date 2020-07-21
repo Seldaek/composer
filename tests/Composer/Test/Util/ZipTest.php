@@ -93,55 +93,26 @@ class ZipTest extends TestCase
         $this->assertEquals("{\n    \"name\": \"foo/bar\"\n}\n", $result);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testThrowsExceptionIfComposerJsonInFirstFolder()
+    public function testReturnsComposerJsonInFirstFolder()
     {
         if (!extension_loaded('zip')) {
             $this->markTestSkipped('The PHP zip extension is not loaded.');
             return;
         }
 
-        Zip::getComposerJson(__DIR__.'/Fixtures/Zip/folder.zip');
+        $result = Zip::getComposerJson(__DIR__.'/Fixtures/Zip/folder.zip');
+        $this->assertEquals("{\n    \"name\": \"foo/bar\"\n}\n", $result);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testMultipleTopLevelDirsIsInvalid()
+    public function testReturnsComposerJsonFromFirstSubfolder()
     {
         if (!extension_loaded('zip')) {
             $this->markTestSkipped('The PHP zip extension is not loaded.');
             return;
         }
 
-        Zip::getComposerJson(__DIR__.'/Fixtures/Zip/multiple.zip');
-    }
+        $result = Zip::getComposerJson(__DIR__.'/Fixtures/Zip/single-sub.zip');
 
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testThrowsExceptionComposerJsonFromFirstSubfolder()
-    {
-        if (!extension_loaded('zip')) {
-            $this->markTestSkipped('The PHP zip extension is not loaded.');
-            return;
-        }
-
-        Zip::getComposerJson(__DIR__.'/Fixtures/Zip/single-sub.zip');
-    }
-
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testThrowsExceptionForMultipleComposerJsonInSubfolders()
-    {
-        if (!extension_loaded('zip')) {
-            $this->markTestSkipped('The PHP zip extension is not loaded.');
-            return;
-        }
-
-        Zip::getComposerJson(__DIR__.'/Fixtures/Zip/multiple_subfolders.zip');
+        $this->assertEquals("{\n    \"name\": \"foo/bar\"\n}\n", $result);
     }
 }

@@ -85,13 +85,17 @@ class Zip
             // handle archives with proper TOC
             if ($dirname === '.') {
                 $topLevelPaths[$name] = true;
-                throw new \RuntimeException('Archive has more than one top level directories, and no composer.json was found on the top level, so it\'s an invalid archive. Top level path found were: '.implode(',', array_keys($topLevelPaths)));
+                if (\count($topLevelPaths) > 1) {
+                    throw new \RuntimeException('Archive has more than one top level directories, and no composer.json was found on the top level, so it\'s an invalid archive. Top level path found were: '.implode(',', array_keys($topLevelPaths)));
+                }
             }
 
             // handle archives which do not have a TOC record for the directory itself
-            if (false === strpos('\\', $dirname) && false === strpos('/', $dirname)) {
+            if ($dirname !== '.' && false === strpos('\\', $dirname) && false === strpos('/', $dirname)) {
                 $topLevelPaths[$dirname.'/'] = true;
-                throw new \RuntimeException('Archive has more than one top level directories, and no composer.json was found on the top level, so it\'s an invalid archive. Top level path found were: '.implode(',', array_keys($topLevelPaths)));
+                if (\count($topLevelPaths) > 1) {
+                    throw new \RuntimeException('Archive has more than one top level directories, and no composer.json was found on the top level, so it\'s an invalid archive. Top level path found were: '.implode(',', array_keys($topLevelPaths)));
+                }
             }
         }
 
