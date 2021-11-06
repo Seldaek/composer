@@ -80,7 +80,6 @@ class HtmlOutputFormatter extends OutputFormatter
      */
     private function formatHtml($matches)
     {
-        var_dump($matches);
         $out = '<span style="';
         foreach (explode(';', $matches[1]) as $code) {
             if (isset(self::$availableForegroundColors[(int) $code])) {
