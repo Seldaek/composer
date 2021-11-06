@@ -575,7 +575,7 @@ EOF;
     /**
      * Registers an autoloader based on an autoload-map returned by parseAutoloads
      *
-     * @param array<string, array> $autoloads see parseAutoloads return value
+     * @param array<string, mixed[]> $autoloads see parseAutoloads return value
      * @param ?string $vendorDir
      * @return ClassLoader
      */

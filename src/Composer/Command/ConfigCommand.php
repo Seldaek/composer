@@ -820,9 +820,9 @@ EOT
     /**
      * Display the contents of the file in a pretty formatted way
      *
-     * @param array<array|bool|string> $contents
-     * @param array<array|string>      $rawContents
-     * @param string|null              $k
+     * @param array<mixed[]|bool|string> $contents
+     * @param array<mixed[]|string>      $rawContents
+     * @param string|null                $k
      *
      * @return void
      */
