@@ -1000,7 +1000,7 @@ EOT
     /**
      * Display the tree
      *
-     * @param array<int, array<string, string|array>> $arrayTree
+     * @param array<int, array<string, string|mixed[]>> $arrayTree
      * @return void
      */
     protected function displayPackageTree(array $arrayTree)
@@ -1046,7 +1046,7 @@ EOT
     /**
      * Generate the package tree
      *
-     * @return array<string, array<int, array<string, array|string>>|string|null>
+     * @return array<string, array<int, array<string, mixed[]|string>>|string|null>
      */
     protected function generatePackageTree(
         PackageInterface $package,
@@ -1088,8 +1088,8 @@ EOT
     /**
      * Display a package tree
      *
-     * @param array<string, array<int, array<string, array|string>>|string|null>|string $package
-     * @param array<int, string|array> $packagesInTree
+     * @param array<string, array<int, array<string, mixed[]|string>>|string|null>|string $package
+     * @param array<int, string|mixed[]> $packagesInTree
      * @param string $previousTreeBar
      * @param int $level
      *
