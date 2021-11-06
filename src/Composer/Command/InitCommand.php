@@ -585,17 +585,7 @@ EOT
                 $exactMatch = null;
                 $choices = array();
                 foreach ($matches as $position => $foundPackage) {
-                    $abandoned = '';
-                    if (isset($foundPackage['abandoned'])) {
-                        if (is_string($foundPackage['abandoned'])) {
-                            $replacement = sprintf('Use %s instead', $foundPackage['abandoned']);
-                        } else {
-                            $replacement = 'No replacement was suggested';
-                        }
-                        $abandoned = sprintf('<warning>Abandoned. %s.</warning>', $replacement);
-                    }
-
-                    $choices[] = sprintf(' <info>%5s</info> %s %s', "[$position]", $foundPackage['name'], $abandoned);
+                    $choices[] = sprintf(' <info>%5s</info> %s', "[$position]", $foundPackage['name']);
                     if ($foundPackage['name'] === $package) {
                         $exactMatch = true;
                         break;
