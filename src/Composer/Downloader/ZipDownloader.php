@@ -32,9 +32,6 @@ class ZipDownloader extends ArchiveDownloader
     /** @var bool */
     private static $isWindows;
 
-    /** @var ZipArchive|null */
-    private $zipArchiveObject;
-
     /**
      * @inheritDoc
      */
@@ -181,7 +178,7 @@ class ZipDownloader extends ArchiveDownloader
     public function extractWithZipArchive(PackageInterface $package, $file, $path)
     {
         $processError = null;
-        $zipArchive = $this->zipArchiveObject ?: new ZipArchive();
+        $zipArchive = new ZipArchive();
 
         try {
             if (true === ($retval = $zipArchive->open($file))) {
