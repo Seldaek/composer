@@ -32,6 +32,9 @@ class ZipDownloader extends ArchiveDownloader
     /** @var bool */
     private static $isWindows;
 
+    /** @var ZipArchive|null */
+    private $zipArchiveObject; // @phpstan-ignore-line helper property that is set via reflection for testing purposes
+
     /**
      * @inheritDoc
      */
@@ -178,7 +181,7 @@ class ZipDownloader extends ArchiveDownloader
     public function extractWithZipArchive(PackageInterface $package, $file, $path)
     {
         $processError = null;
-        $zipArchive = new ZipArchive();
+        $zipArchive = $this->zipArchiveObject ?: new ZipArchive();
 
         try {
             if (true === ($retval = $zipArchive->open($file))) {
