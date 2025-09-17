@@ -386,4 +386,18 @@ class Cache
     {
         return Finder::create()->in($this->root)->files();
     }
+
+    public function getPath(string $file): ?string
+    {
+        if ($this->isEnabled()) {
+            $file = Preg::replace('{[^'.$this->allowlist.']}i', '-', $file);
+            if (file_exists($this->root . $file)) {
+                $this->io->writeError('Accessing '.$this->root . $file.' from cache', true, IOInterface::DEBUG);
+
+                return $this->root . $file;
+            }
+        }
+
+        return null;
+    }
 }

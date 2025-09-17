@@ -1103,12 +1103,16 @@ class ComposerRepository extends ArrayRepository implements ConfigurableReposito
         $cacheKey = 'provider-'.strtr($name, '/', '~').'.json';
 
         $lastModified = null;
-        if ($contents = $this->cache->read($cacheKey)) {
-            $contents = json_decode($contents, true);
-            $lastModified = $contents['last-modified'] ?? null;
-            // Free memory and do not pass this directly to the promise as otherwise
-            // we'd be hogging memory for all the promises created until they are resolved
-            unset($contents);
+        if ($cachePath = $this->cache->getPath($cacheKey)) {
+            $cacheHandle = fopen($cachePath, 'r+');
+            if ($cacheHandle !== false) {
+                fseek($cacheHandle, filesize($cachePath) - 60);
+                if (Preg::isMatch('{"last-modified":"([^"]+)"}', stream_get_contents($cacheHandle), $match)) {
+                    $lastModified = $match[1];
+                }
+                fclose($cacheHandle);
+            }
+            unset($cachePath, $cacheHandle, $match);
         }
 
         return $this->asyncFetchFile($url, $cacheKey, $lastModified)
