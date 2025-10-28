@@ -769,4 +769,54 @@ class Application extends BaseApplication
     {
         return function_exists('posix_getuid') && posix_getuid() === 0;
     }
+
+    /**
+     * Override find() to support NPX-style package execution
+     *
+     * If a command name looks like a package name (contains a slash), and no
+     * command with that name exists, dynamically create a PackageExecutorCommand.
+     *
+     * @param string $name Command name (or package name)
+     * @return SymfonyCommand
+     * @throws CommandNotFoundException
+     */
+    public function find(string $name): SymfonyCommand
+    {
+        try {
+            return parent::find($name);
+        } catch (CommandNotFoundException $e) {
+            // Check if the command name looks like a package name (vendor/package format)
+            if ($this->looksLikePackageName($name)) {
+                // Create and return a dynamic PackageExecutorCommand
+                $command = new Command\PackageExecutorCommand($name);
+                $command->setApplication($this);
+                return $command;
+            }
+
+            // Not a package name, re-throw the original exception
+            throw $e;
+        }
+    }
+
+    /**
+     * Check if a string looks like a valid Composer package name
+     *
+     * Package names must be in the format: vendor/package
+     * where vendor and package follow specific naming rules.
+     *
+     * @param string $name The string to check
+     * @return bool True if it looks like a package name
+     */
+    private function looksLikePackageName(string $name): bool
+    {
+        // Package name must contain exactly one forward slash
+        if (substr_count($name, '/') !== 1) {
+            return false;
+        }
+
+        // Match against Composer's package name pattern
+        // Vendor and package names should contain only lowercase letters, numbers, hyphens, underscores, and dots
+        // They must start with a letter or number
+        return (bool) preg_match('{^[a-z0-9]([_.-]?[a-z0-9]+)*/[a-z0-9](([_.]?|-{0,2})[a-z0-9]+)*$}i', $name);
+    }
 }
