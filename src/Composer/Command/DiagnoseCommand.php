@@ -16,6 +16,7 @@ use Composer\Advisory\Auditor;
 use Composer\Composer;
 use Composer\Factory;
 use Composer\Config;
+use Composer\Downloader\TarZstDownloader;
 use Composer\Downloader\TransportException;
 use Composer\IO\BufferIO;
 use Composer\Json\JsonFile;
@@ -43,6 +44,8 @@ use Composer\SelfUpdate\Versions;
 use Composer\IO\NullIO;
 use Composer\Package\CompletePackageInterface;
 use Composer\XdebugHandler\XdebugHandler;
+use Composer\Zstd\Extractor;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\ExecutableFinder;
@@ -149,6 +152,7 @@ EOT
             . ', ' . ($hasSystem7zip ? '<comment>7-Zip present ('.$bin7zip.')</comment>' : '<comment>7-Zip not available</comment>')
             . (($hasSystem7zip || $hasSystemUnzip) && !function_exists('proc_open') ? ', <warning>proc_open is disabled or not present, unzip/7-z will not be usable</warning>' : '')
         );
+        $io->write('tar.zst: '.$this->getZstdSupport($config));
 
         if ($composer) {
             $io->write('Active plugins: '.implode(', ', $composer->getPluginManager()->getRegisteredPlugins()));
@@ -248,6 +252,32 @@ EOT
         $this->outputResult($this->checkDiskSpace($config));
 
         return $this->exitCode;
+    }
+
+    private function getZstdSupport(Config $config): string
+    {
+        $extractor = (new TarZstDownloader($this->getIO(), $config, $this->httpDownloader, null, null, null, $this->process))->getExtractor();
+        $methods = $extractor->getAvailableMethods();
+        $reasons = $extractor->getUnavailableReasons();
+        if ($methods === []) {
+            return '<warning>no extraction method available ('.implode(', ', $reasons).')</warning>';
+        }
+
+        $labels = [
+            Extractor::METHOD_BUNDLED => 'zstd-extract binary',
+            Extractor::METHOD_EXT_ZSTD => 'zstd extension',
+            Extractor::METHOD_ZSTD_CLI => 'zstd command',
+            Extractor::METHOD_PHP => 'pure PHP',
+        ];
+        $result = '<comment>using the '.$labels[$methods[0]].'</comment>';
+        if ($methods[0] === Extractor::METHOD_PHP) {
+            $result .= ', <warning>only the slow pure PHP extraction is available, installing zstd or the zstd extension would speed it up</warning>';
+        }
+        if (isset($reasons[Extractor::METHOD_BUNDLED])) {
+            $result .= ' (bundled binary not usable: '.OutputFormatter::escape($reasons[Extractor::METHOD_BUNDLED]).')';
+        }
+
+        return $result;
     }
 
     /**

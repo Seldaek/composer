@@ -42,7 +42,9 @@ incompatibilities.
 Composer needs several supporting applications to work effectively, making the
 process of handling package dependencies more efficient. For decompressing
 files, Composer relies on tools like `7z` (or `7zz`), `gzip`, `tar`, `unrar`,
-`unzip` and `xz`. As for version control systems, Composer integrates seamlessly
+`unzip` and `xz`. For `.tar.zst` archives it uses a small helper binary
+bundled with Composer, or else `zstd`, the zstd PHP extension or a slower pure
+PHP fallback. As for version control systems, Composer integrates seamlessly
 with Fossil, Git, Mercurial, Perforce and Subversion, thereby ensuring the
 application's smooth operation and management of library repositories. Before
 using Composer, ensure that these dependencies are correctly installed on your

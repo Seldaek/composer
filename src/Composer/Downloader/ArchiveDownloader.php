@@ -175,7 +175,7 @@ abstract class ArchiveDownloader extends FileDownloader
 
             // metadata siblings must not prevent unwrapping a single top-level dir
             $contentDir = $getFolderContent($temporaryDir, true);
-            $singleDirAtTopLevel = 1 === count($contentDir) && is_dir((string) reset($contentDir));
+            $singleDirAtTopLevel = $this->unwrapsSingleDirectory() && 1 === count($contentDir) && is_dir((string) reset($contentDir));
 
             if ($renameAsOne) {
                 // if the target $path is clear, we can rename the whole package in one go instead of looping over the contents
@@ -206,6 +206,15 @@ abstract class ArchiveDownloader extends FileDownloader
 
             throw $e;
         });
+    }
+
+    /**
+     * Whether an archive holding a single directory gets that directory's contents installed, e.g. for GitHub
+     * archives, which wrap the files in a directory named after the repository and commit
+     */
+    protected function unwrapsSingleDirectory(): bool
+    {
+        return true;
     }
 
     /**

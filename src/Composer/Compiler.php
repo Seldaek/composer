@@ -129,6 +129,7 @@ class Compiler
             ->notPath('justinrainbow/json-schema/bin/')
             ->notPath('composer/pcre/extension.neon')
             ->notPath('composer/LICENSE')
+            ->notPath('/composer\/zstd\/bin\/.*\.cdx\.json$/')
             ->exclude('Tests')
             ->exclude('tests')
             ->exclude('docs')
@@ -137,14 +138,14 @@ class Compiler
         ;
 
         $extraFiles = [];
-        foreach ([
+        foreach (array_merge([
             __DIR__ . '/../../vendor/composer/installed.json',
             __DIR__ . '/../../vendor/composer/spdx-licenses/res/spdx-exceptions.json',
             __DIR__ . '/../../vendor/composer/spdx-licenses/res/spdx-licenses.json',
             CaBundle::getBundledCaBundlePath(),
             __DIR__ . '/../../vendor/symfony/console/Resources/bin/hiddeninput.exe',
             __DIR__ . '/../../vendor/symfony/console/Resources/completion.bash',
-        ] as $file) {
+        ], self::getZstdFiles()) as $file) {
             $extraFiles[$file] = realpath($file);
             if (!file_exists($file)) {
                 throw new \RuntimeException('Extra file listed is missing from the filesystem: '.$file);
@@ -217,6 +218,29 @@ class Compiler
         $relativePath = ($pos !== false) ? substr_replace($realPath, '', $pos, strlen($pathPrefix)) : $realPath;
 
         return strtr($relativePath, '\\', '/');
+    }
+
+    /**
+     * The zstd-extract binaries listed in SHA256SUMS, with their checksums and licenses
+     *
+     * @return list<string>
+     */
+    private static function getZstdFiles(): array
+    {
+        $dir = __DIR__ . '/../../vendor/composer/zstd/bin/';
+        $files = [$dir.'SHA256SUMS', $dir.'LICENSE.zstd', $dir.'LICENSE.musl', $dir.'LICENSE.rust'];
+        $sums = file($dir.'SHA256SUMS', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if ($sums === false) {
+            throw new \RuntimeException('Could not read '.$dir.'SHA256SUMS');
+        }
+        foreach ($sums as $line) {
+            $name = substr($line, 66);
+            if (!str_ends_with($name, '.cdx.json')) {
+                $files[] = $dir.$name;
+            }
+        }
+
+        return $files;
     }
 
     private function addFile(\Phar $phar, \SplFileInfo $file, bool $strip = true): void

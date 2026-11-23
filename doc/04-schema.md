@@ -341,6 +341,12 @@ Where the package archive lives, used when installing the package from dist.
 `type` and `url` are required, `reference`, `shasum` and `mirrors` are
 optional.
 
+`type` is one of `zip`, `tar` (also `.tar.gz` and `.tar.bz2`), `tar-zst`,
+`rar`, `gzip`, `xz`, `phar` or `file`. Archives other than `tar-zst` that
+contain a single directory get that directory's contents installed, as e.g.
+GitHub archives wrap the files in one. A `tar-zst` archive must hold the
+package files at its root, it is installed as is.
+
 ```json
 {
     "dist": {
