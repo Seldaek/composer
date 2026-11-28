@@ -523,12 +523,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/zstd.git",
-                "reference": "ac9dc79ae200260c10f0ce25b8be6f33d4b9cf36"
+                "reference": "10a0d1fe6fb6f91e122c6796de0f20606ef4f527"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/zstd/zipball/ac9dc79ae200260c10f0ce25b8be6f33d4b9cf36",
-                "reference": "ac9dc79ae200260c10f0ce25b8be6f33d4b9cf36",
+                "url": "https://api.github.com/repos/composer/zstd/zipball/10a0d1fe6fb6f91e122c6796de0f20606ef4f527",
+                "reference": "10a0d1fe6fb6f91e122c6796de0f20606ef4f527",
                 "shasum": ""
             },
             "require": {
@@ -588,8 +588,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-28T14:52:37+00:00",
-            "published-time": "2026-11-28T14:52:51+00:00"
+            "time": "2026-11-28T15:30:12+00:00",
+            "published-time": "2026-11-28T15:30:19+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
