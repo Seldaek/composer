@@ -342,7 +342,8 @@ Where the package archive lives, used when installing the package from dist.
 optional.
 
 `type` is one of `zip`, `tar` (also `.tar.gz` and `.tar.bz2`), `tar-zst`,
-`rar`, `gzip`, `xz`, `phar` or `file`. Archives other than `tar-zst` that
+`rar`, `gzip`, `zstd`, `xz`, `phar` or `file`. `gzip` and `zstd` are single
+compressed files, e.g. `foo.phar.zst`, installed without their extension. Archives other than `tar-zst` that
 contain a single directory get that directory's contents installed, as e.g.
 GitHub archives wrap the files in one. A `tar-zst` archive must hold the
 package files at its root, it is installed as is.
